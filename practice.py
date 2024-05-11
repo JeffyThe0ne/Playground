@@ -1,0 +1,2 @@
+file = open("ASV.txt")
+
