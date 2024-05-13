@@ -10,7 +10,7 @@ def search_bible(word=str):
     '''
     results = 0
 
-    for line in bible_lines:
+    for line in bible:
         if word.upper() in line.upper():
             print(line)
             results += 1
@@ -20,13 +20,29 @@ def search_bible(word=str):
     else:
         print('Total results: {}'.format(results))
 
+# Searches the Webster 1828 Dictionary for the word's entry if it exists
+def search_dictionary(word=str):
+    '''
+    Searches the Webster 1828 Dictionary for the word entry if it exists
+    '''
+
+    for line in d:
+        if word.upper() + ', ' == line[0:len(word) + 2]:
+            print(line)
+    else:
+        print('No results')
+
+
 
 # Run
-bible = open("ASV.txt", 'r')
-bible_lines = bible.readlines()
+with open("ASV.txt", 'r') as fileb:
+    bible = fileb.readlines()
+
+with open("Webster.txt", 'r', encoding='utf-8') as filed:
+    d = filed.readlines()
 
 print("Initialized")
 
-term = input("What would you like to search for?")
+word = input("What would you like to search for?")
 
-search_bible(term)
+search_dictionary(word)
