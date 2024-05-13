@@ -1,7 +1,8 @@
 ## A simple Bible database thing ##
+import json
 
 # Startup
-print("Initializing...")
+print('Initializing...')
 
 # Searches the Bible for a given word.  Case-insensitive
 def search_bible(word=str):
@@ -9,40 +10,35 @@ def search_bible(word=str):
     Searches the Bible for a given word.  Case-insensitive
     '''
     results = 0
+    data = []
 
     for line in bible:
         if word.upper() in line.upper():
             print(line)
+            data.append(line)
             results += 1
     
     if results == 0:
         print("No results")
     else:
         print('Total results: {}'.format(results))
-
-# Searches the Webster 1828 Dictionary for the word's entry if it exists
-def search_dictionary(word=str):
-    '''
-    Searches the Webster 1828 Dictionary for the word entry if it exists
-    '''
-
-    for line in d:
-        if word.upper() + ', ' == line[0:len(word) + 2]:
-            print(line)
-    else:
-        print('No results')
-
-
+    
+    return data
 
 # Run
 with open("ASV.txt", 'r') as fileb:
     bible = fileb.readlines()
 
-with open("Webster.txt", 'r', encoding='utf-8') as filed:
-    d = filed.readlines()
-
 print("Initialized")
 
-word = input("What would you like to search for?")
+# Term Search
+word = input('What would you like to search for?')
+data = search_bible(word)
 
-search_dictionary(word)
+# Save data to json
+print('Saving data...')
+
+with open('bible_search.json', 'w') as output:
+    json.dump(data, output)
+
+print('Data saved')
