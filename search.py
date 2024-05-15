@@ -8,7 +8,7 @@ import time
 parser = argparse.ArgumentParser(description='Search the Bible for a term')
 
 parser.add_argument('terms', metavar='t', nargs='+', help='Word or phrase to search for')
-parser.add_argument('--version', '-v', default='ASV', choices=['ASV'], help='Bible version you want to use')
+parser.add_argument('--version', '-v', default='ASV', choices=['ASV','KJV','WBT'], help='Bible version you want to use')
 
 args = parser.parse_args()
 
@@ -120,19 +120,19 @@ if __name__ == "__main__":
     # Save data to json
     # save(data, 'bible_search.json', 'w')
 
-    discrepancies = []
+    # Tests for discrepancies between the two methods
+    # discrepancies = []
     
+    # for i in range(0, len(lines)):
+    #    lines[i] = lines[i].strip()
 
-    for i in range(0, len(lines)):
-        lines[i] = lines[i].strip()
+    # for i in range(0, len(strings)):
+    #    strings[i] = strings[i].strip()
 
-    for i in range(0, len(strings)):
-        strings[i] = strings[i].strip()
+    #for line in lines:
+    #    for phrase in strings:
+    #        if line not in strings:
+    #            discrepancies.append(line)
+    #            break
 
-    for line in lines:
-        for phrase in strings:
-            if line not in strings:
-                discrepancies.append(line)
-                break
-
-    print(len(discrepancies))
+    #print(len(discrepancies))
