@@ -1,6 +1,8 @@
 ## Stuff to prepare search data ##
 import json
+import os
 
+# Book names for building the index dict
 books_src = ('Genesis', 'Exodus', 'Leviticus', 'Numbers', 'Deuteronomy', 'Joshua', 'Judges', 'Ruth', '1 Samuel', '2 Samuel', '1 Kings',
              '2 Kings', '1 Chronicles', '2 Chronicles', 'Ezra', 'Nehemiah', 'Esther', 'Job', 'Psalm',
              'Proverbs', 'Ecclesiastes', 'Song of Solomon', 'Isaiah', 'Jeremiah', 'Lamentations', 'Ezekiel', 'Daniel', 'Hosea', 'Joel',
@@ -10,7 +12,10 @@ books_src = ('Genesis', 'Exodus', 'Leviticus', 'Numbers', 'Deuteronomy', 'Joshua
              'Titus', 'Philemon', 'Hebrews', 'James', '1 Peter', '2 Peter', '1 John', '2 John', '3 John',
              'Jude', 'Revelation')
 
+# Builds line indexes for the start of each Bible book
 def line_indexes(books_src=tuple):
+    '''Builds line indexes for the start of each Bible book'''
+
     with open('ASV.txt') as file:
         bible = file.readlines()
     
@@ -24,9 +29,26 @@ def line_indexes(books_src=tuple):
 
     save(books, 'book_indexes.json')
 
+# Saves given data to a given json file
 def save(data, file=str):
+    '''Saves given data to a given json file'''
+
+    # Check if file exists
+    if os.path.isfile(file):
+        
+        # Verify user wants to overwrite
+        while True:
+            result = input('"{}" already exists.  Overwrite? (Y/n)'.format(file))
+            
+            if result == 'Y': break # Continue to save
+            elif result == 'n': quit()
+            else:
+                print("Invalid input")
+                continue 
+
     print('Saving data...')
 
+    # Save file
     with open(file, 'w') as output:
         json.dump(data, output)
     

@@ -98,13 +98,16 @@ def books(data=list):
         book = ''
         index = 0
     
+        # Grabs the verse's book name by going from index 0 to the space before the '\t' char
         book = line[0:line.rfind(' ', 0, line.index('\t'))]
 
+        # Add to number of book hits
         if book in books.keys():
             books[book] += 1
         else:
             books[book] = 1
-        
+    
+    # Print results
     print("Books of results:")
     for key,value in books.items():
         print('{}: {}'.format(key, value))
@@ -112,11 +115,14 @@ def books(data=list):
 # Run
 if __name__ == "__main__":
 
+    # Search for term
     data = search(args)
     print()
 
+    # Display all hits if verbose is on
     if args.verbose == True: disp_info(data) 
 
+    # Displays books of results if no book was specified
     if args.book == None: books(data)
     
     # Save data to json
