@@ -4,7 +4,7 @@ import prep
 import json
 
 
-# All books of the Bible.  Psalms is Psalm, Song of Songs is Song of Solomon
+# All books of the Bible.  Psalms is Psalm, Song of Songs is Song of Solomon.  Not currently used, but might want it later
 book_args = ('Genesis', 'Exodus', 'Leviticus', 'Numbers', 'Deuteronomy', 'Joshua', 'Judges', 'Ruth', '1 Samuel', '1-Samuel', '2 Samuel', '2-Samuel', '1 Kings',
              '1-Kings', '2 Kings', '2-Kings', '1 Chronicles', '1-Chronicles', '2 Chronicles', '2-Chronicles', 'Ezra', 'Nehemiah', 'Esther', 'Job', 'Psalm',
              'Psalms', 'Proverbs', 'Ecclesiastes', 'Song of Solomon', 'Song of Songs', 'Isaiah', 'Jeremiah', 'Lamentations', 'Ezekiel', 'Daniel', 'Hosea', 'Joel',
@@ -14,6 +14,7 @@ book_args = ('Genesis', 'Exodus', 'Leviticus', 'Numbers', 'Deuteronomy', 'Joshua
              '2-Timothy', 'Titus', 'Philemon', 'Hebrews', 'James', '1 Peter', '1-Peter', '2 Peter', '2-Peter', '1 John', '1-John', '2 John', '2-John', '3 John',
              '3-John', 'Jude', 'Revelation')
 
+# Books to grab start and end indexes from "book_indexes.json" if a book is specified
 books_src = ('genesis', 'exodus', 'leviticus', 'numbers', 'deuteronomy', 'joshua', 'judges', 'ruth', '1 samuel', '2 samuel', '1 kings', '2 kings', '1 chronices',
              '2 chronicles', 'ezra', 'nehemiah', 'esther', 'job', 'psalms', 'proverbs', 'ecclesiastes', 'song of solomon', 'isaiah', 'jeremiah', 'lamentations',
              'ezekiel', 'daniel', 'hosea', 'joel', 'amos', 'obadiah', 'jonah', 'micah', 'nahum', 'habakkuk', 'zephaniah', 'haggai', 'zechariah', 'malachi',
@@ -34,17 +35,19 @@ parser.add_argument('--save', '-s', default=None, help='Specify which file you w
 args = parser.parse_args()
 
 
-# Searches through Bible
+# Searches the Bible for the given term with applied filters
 def search (args=argparse.Namespace):
-    '''Searches the Bible in the given version for the given term'''
+    '''Searches the Bible for the given term with applied filters'''
     word = ' '.join(args.terms)
     data = []
     start = 0 # start index if no book is specified
     end = 31104 # end index if no book is specified
 
+    # Open Bible
     with open(args.version + '.txt') as file:
         bible = file.readlines()
 
+    # If user gives a book to search
     if args.book != None:
 
         # For case-insensitivity
@@ -61,18 +64,14 @@ def search (args=argparse.Namespace):
         with open('book_indexes.json') as file:
             books = json.load(file)
 
-
-        # Gets start index
+        # Gets start and end indexes
         start = books[args.book]
         end = books[books_src[books_src.index(args.book) + 1]]
 
-        print(start)
-        print(end)
-
-
     # Search for term from start index
     data = list(filter(lambda line: word.lower() in line.lower(), bible[start:end]))
-                
+            
+    # Display number of hits, if any
     hits = len(data)
 
     if hits == 0:
@@ -82,7 +81,9 @@ def search (args=argparse.Namespace):
     
     return data
 
+# Displays all hits
 def disp_info(data = list):
+    '''Displays all hits'''
     for line in data:
         print(line)
     
@@ -109,8 +110,14 @@ def books(data=list):
     
     # Print results
     print("Books of results:")
+    
+    # Grab total to display percentage values in results
+    total_value = 0
+    for value in books.values(): total_value += value
+
+    # Display values
     for key,value in books.items():
-        print('{}: {}'.format(key, value))
+        print('{0}: {1} ({2:.2f}%)'.format(key, value, (value / total_value) * 100))
 
 # Run
 if __name__ == "__main__":
