@@ -5,7 +5,7 @@ import json
 
 
 # All books of the Bible.  Psalms is Psalm, Song of Songs is Song of Solomon
-books_src = ('Genesis', 'Exodus', 'Leviticus', 'Numbers', 'Deuteronomy', 'Joshua', 'Judges', 'Ruth', '1 Samuel', '1-Samuel', '2 Samuel', '2-Samuel', '1 Kings',
+book_args = ('Genesis', 'Exodus', 'Leviticus', 'Numbers', 'Deuteronomy', 'Joshua', 'Judges', 'Ruth', '1 Samuel', '1-Samuel', '2 Samuel', '2-Samuel', '1 Kings',
              '1-Kings', '2 Kings', '2-Kings', '1 Chronicles', '1-Chronicles', '2 Chronicles', '2-Chronicles', 'Ezra', 'Nehemiah', 'Esther', 'Job', 'Psalm',
              'Psalms', 'Proverbs', 'Ecclesiastes', 'Song of Solomon', 'Song of Songs', 'Isaiah', 'Jeremiah', 'Lamentations', 'Ezekiel', 'Daniel', 'Hosea', 'Joel',
              'Amos', 'Obadiah', 'Jonah', 'Micah', 'Nahum', 'Habakkuk', 'Zephaniah', 'Haggai', 'Zechariah', 'Malachi',
@@ -14,14 +14,21 @@ books_src = ('Genesis', 'Exodus', 'Leviticus', 'Numbers', 'Deuteronomy', 'Joshua
              '2-Timothy', 'Titus', 'Philemon', 'Hebrews', 'James', '1 Peter', '1-Peter', '2 Peter', '2-Peter', '1 John', '1-John', '2 John', '2-John', '3 John',
              '3-John', 'Jude', 'Revelation')
 
+books_src = ('genesis', 'exodus', 'leviticus', 'numbers', 'deuteronomy', 'joshua', 'judges', 'ruth', '1 samuel', '2 samuel', '1 kings', '2 kings', '1 chronices',
+             '2 chronicles', 'ezra', 'nehemiah', 'esther', 'job', 'psalms', 'proverbs', 'ecclesiastes', 'song of solomon', 'isaiah', 'jeremiah', 'lamentations',
+             'ezekiel', 'daniel', 'hosea', 'joel', 'amos', 'obadiah', 'jonah', 'micah', 'nahum', 'habakkuk', 'zephaniah', 'haggai', 'zechariah', 'malachi',
+             'matthew', 'mark', 'luke', 'john', 'acts', 'romans', '1 corinthians', '2 corinthians', 'galatians', 'ephesians', 'philippians', 'colossians',
+             '1 thessalonians', '2 thessalonians', '1 timothy', '2 timothy', 'titus', 'philemon', 'hebrews', 'james', '1 peter', '2 peter', '1 john', '2 john',
+             '3 john', 'jude', 'revelation')
+
 # Argument Parsing
 parser = argparse.ArgumentParser(description='Search the Bible for a term')
 
 parser.add_argument('terms', nargs='+', help='Word or phrase to search for')                                             # Search terms
-parser.add_argument('--version', '-v', default='ASV', choices=['ASV','KJV','WBT'], help='Bible version you want to use') # Bible version
+parser.add_argument('--version', '-ve', default='ASV', choices=['ASV','KJV','WBT'], help='Bible version you want to use') # Bible version
 parser.add_argument('--book', '-b', default=None, help='Bible book you want to use.  Case-insensitive.')                 # Specific book filter
-parser.add_argument('--display', '-d', action='store_true', help='Choose whether verses with search term are displayed') # Display found verses
-parser.add_argument('--save', '-s', help='Specify which file you wish to save to')
+parser.add_argument('--verbose', '-vo', action='store_true', help='Choose whether verses with search term are displayed') # Display found verses
+parser.add_argument('--save', '-s', default=None, help='Specify which file you wish to save to')
 
 
 args = parser.parse_args()
@@ -33,6 +40,7 @@ def search (args=argparse.Namespace):
     word = ' '.join(args.terms)
     data = []
     start = 0 # start index if no book is specified
+    end = 31104 # end index if no book is specified
 
     with open(args.version + '.txt') as file:
         bible = file.readlines()
@@ -52,11 +60,18 @@ def search (args=argparse.Namespace):
         # Loads indexes json to get start indexes
         with open('book_indexes.json') as file:
             books = json.load(file)
-        
+
+
         # Gets start index
         start = books[args.book]
+        end = books[books_src[books_src.index(args.book) + 1]]
 
-    data = list(filter(lambda line: word in line, bible[start:]))
+        print(start)
+        print(end)
+
+
+    # Search for term from start index
+    data = list(filter(lambda line: word.lower() in line.lower(), bible[start:end]))
                 
     hits = len(data)
 
@@ -72,7 +87,7 @@ def disp_info(data = list):
         print(line)
     
     if len(data) != 0:
-        print('Results: {}'.format(len(data)))
+        print('Results: {}\n'.format(len(data)))
 
 # Shows how many hits are in each book
 def books(data=list):
@@ -90,7 +105,7 @@ def books(data=list):
         else:
             books[book] = 1
         
-    print("Books of results:\n")
+    print("Books of results:")
     for key,value in books.items():
         print('{}: {}'.format(key, value))
 
@@ -100,9 +115,10 @@ if __name__ == "__main__":
     data = search(args)
     print()
 
-    if args.display == True: disp_info(data) 
+    if args.verbose == True: disp_info(data) 
 
     if args.book == None: books(data)
     
     # Save data to json
-    prep.save(data, 'bible_search.json')
+    if args.save != None:
+        prep.save(data, args.save)
