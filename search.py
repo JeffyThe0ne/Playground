@@ -133,5 +133,4 @@ if __name__ == "__main__":
     if args.book == None: books(data)
     
     # Save data to json
-    if args.save != None:
-        prep.save(data, args.save)
+    if args.save != None: prep.save(data, args.save)
