@@ -4,15 +4,7 @@ import prep
 import json
 
 
-# All books of the Bible.  Psalms is Psalm, Song of Songs is Song of Solomon.  Not currently used, but might want it later
-book_args = ('Genesis', 'Exodus', 'Leviticus', 'Numbers', 'Deuteronomy', 'Joshua', 'Judges', 'Ruth', '1 Samuel', '1-Samuel', '2 Samuel', '2-Samuel', '1 Kings',
-             '1-Kings', '2 Kings', '2-Kings', '1 Chronicles', '1-Chronicles', '2 Chronicles', '2-Chronicles', 'Ezra', 'Nehemiah', 'Esther', 'Job', 'Psalm',
-             'Psalms', 'Proverbs', 'Ecclesiastes', 'Song of Solomon', 'Song of Songs', 'Isaiah', 'Jeremiah', 'Lamentations', 'Ezekiel', 'Daniel', 'Hosea', 'Joel',
-             'Amos', 'Obadiah', 'Jonah', 'Micah', 'Nahum', 'Habakkuk', 'Zephaniah', 'Haggai', 'Zechariah', 'Malachi',
-             'Matthew', 'Mark', 'Luke', 'John', 'Acts', 'Romans', '1 Corinthians', '1-Corinthians', '2 Corinthians', '2-Corinthians', 'Galatians', 'Ephesians',
-             'Philippians', 'Colossians', '1 Thessalonians', '1-Thessalonians', '2 Thessalonians', '2-Thessalonians', '1 Timothy', '1-Timothy', '2 Timothy',
-             '2-Timothy', 'Titus', 'Philemon', 'Hebrews', 'James', '1 Peter', '1-Peter', '2 Peter', '2-Peter', '1 John', '1-John', '2 John', '2-John', '3 John',
-             '3-John', 'Jude', 'Revelation')
+
 
 # Books to grab start and end indexes from "book_indexes.json" if a book is specified
 books_src = ('genesis', 'exodus', 'leviticus', 'numbers', 'deuteronomy', 'joshua', 'judges', 'ruth', '1 samuel', '2 samuel', '1 kings', '2 kings', '1 chronices',
@@ -34,6 +26,8 @@ parser.add_argument('--save', '-s', default=None, help='Specify which file you w
 
 args = parser.parse_args()
 
+def find_line(word, line):
+    if word in line: return line
 
 # Searches the Bible for the given term with applied filters
 def search (args=argparse.Namespace):
@@ -49,27 +43,41 @@ def search (args=argparse.Namespace):
 
     # If user gives a book to search
     if args.book != None:
+        
+        book = args.book
 
-        # For case-insensitivity
-        args.book = args.book.lower()
+        # For case-insensitivity        
+        book = book.lower()
 
-        # In case they used a '-' book name like 1-Corinthians
-        if '-' in args.book: args.book = args.book[0:args.book.index('-')] + ' ' + args.book[args.book.index('-') + 1:]  
+        # In case user used a '-' book name like 1-Corinthians
+        if '-'in book:
+            r = book.index('-')
+            book = book[:r] + ' ' + book[r+1:] 
             
         # Corrects Song of Songs and Psalms to be system-friendly
-        if args.book == 'song of songs': args.book = 'song of solomon'
-        if args.book == 'psalms': args.book = 'psalm'
+        if book == 'song of songs': book = 'song of solomon'
+        if book == 'psalms': book = 'psalm'
+
+        # Quits program if book is not found
+        if book not in books_src:
+            print('"{}" is not a valid book'.format(book))
+            quit()
         
         # Loads indexes json to get start indexes
         with open('book_indexes.json') as file:
             books = json.load(file)
 
         # Gets start and end indexes
-        start = books[args.book]
-        end = books[books_src[books_src.index(args.book) + 1]]
+        start = books[book]
+        end = books[books_src[books_src.index(book) + 1]]
 
     # Search for term from start index
-    data = list(filter(lambda line: word.lower() in line.lower(), bible[start:end]))
+    data = []
+    
+    # Search through Bible
+    for i in range(start, end):
+        if word.lower() in bible[i].lower(): data.append(bible[i])
+
             
     # Display number of hits, if any
     hits = len(data)
@@ -82,7 +90,7 @@ def search (args=argparse.Namespace):
     return data
 
 # Displays all hits
-def disp_info(data = list):
+def disp_info(data):
     '''Displays all hits'''
     for line in data:
         print(line)
@@ -91,7 +99,7 @@ def disp_info(data = list):
         print('Results: {}\n'.format(len(data)))
 
 # Shows how many hits are in each book
-def books(data=list):
+def books(data):
     '''Shows how many hits are in each book'''
     books = {}
 
