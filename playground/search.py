@@ -17,10 +17,10 @@ books_src = ('genesis', 'exodus', 'leviticus', 'numbers', 'deuteronomy', 'joshua
 # Argument Parsing
 parser = argparse.ArgumentParser(description='Search the Bible for a term')
 
-parser.add_argument('terms', nargs='+', help='Word or phrase to search for')                                             # Search terms
-parser.add_argument('--version', '-ve', default='ASV', choices=['ASV','KJV','WBT'], help='Bible version you want to use') # Bible version
-parser.add_argument('--book', '-b', default=None, help='Bible book you want to use.  Case-insensitive.')                 # Specific book filter
-parser.add_argument('--verbose', '-vo', action='store_true', help='Choose whether verses with search term are displayed') # Display found verses
+parser.add_argument('terms', nargs='+', help='Word or phrase to search for')                                                # Search terms
+parser.add_argument('--version', '-ve', default='ASV', choices=['ASV','KJV','WBT'], help='Bible version you want to use')   # Bible version
+parser.add_argument('--book', '-b', default=None, help='Bible book you want to use.  Case-insensitive.')                    # Specific book filter
+parser.add_argument('--verbose', '-vo', action='store_true', help='Choose whether verses with search term are displayed')   # Display found verses
 parser.add_argument('--save', '-s', default=None, help='Specify which file you wish to save to')
 
 
