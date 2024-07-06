@@ -1,4 +1,4 @@
-# Allows the user to input the stuff to run search.py
+#!/bin/bash
 
 echo "A simple Bible search tool";
 echo 'Type your term along with filters, "h" for usage, or "e" to exit';
@@ -19,6 +19,6 @@ elif [ "$var" == "e" ]; then
 
 else
 
-	run
+	# run
 
 fi;
