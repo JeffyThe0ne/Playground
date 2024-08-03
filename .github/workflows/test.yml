@@ -1,5 +1,5 @@
 name: test
-run-name: asfd
+run-name: pull-main
 on: 
     push:
         branches:
